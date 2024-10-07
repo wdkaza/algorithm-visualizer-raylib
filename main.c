@@ -1,11 +1,16 @@
 #include "raylib.h"
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
-#define SHUFFLE_LEN 5
+#define SHUFFLE_LEN 63
+#define DELAY 10
 
 
 void shuffle(int array[], int length);
+void swap(int* array, int i, int j);
+void bubbleSort(int array[], int n);
+void drawArray(int array[], int length, int posX, int width);
 
 
 int main(void)
@@ -17,16 +22,18 @@ int main(void)
 
     int posX = 20;
     int width = 20;
-    int max = SHUFFLE_LEN;
+    int height;
+
 
     int array[SHUFFLE_LEN];
     for(int i = 0; i < SHUFFLE_LEN; i++) {
         array[i] = i + 1;
     }
+    int n = sizeof(array) / sizeof(array[0]);
 
     shuffle(array, SHUFFLE_LEN);
 
-    InitWindow(screenWidth, screenHeight, "woah a window!");
+    InitWindow(screenWidth, screenHeight, "nice");
 
     SetTargetFPS(60); 
 
@@ -35,17 +42,19 @@ int main(void)
         // Update
         //----------------------------------------------------------------------------------
 
+        if (IsKeyPressed(KEY_SPACE)){
+            bubbleSort(array, n);
+        }
+
+        for(int i = 0; i < SHUFFLE_LEN; i++){
+            DrawRectangle(posX + (i * 30),25, width, (array[i] * 30) / 3, GREEN);
+        }
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
             ClearBackground(BLACK);
-            
-            for(int i = 0; i < SHUFFLE_LEN; i++){
-                DrawRectangle(posX + (i * 10),100, width, 300, GREEN);
-            }
-            DrawRectangle(20, 500 - 300, width, 1000, GREEN);
-
+            DrawText("Press space to sort",500,500,20,YELLOW);
 
         EndDrawing();
         //----------------------------------------------------------------------------------
@@ -64,5 +73,31 @@ void shuffle(int array[], int length){
         int temp = array[i];
         array[i] = array[swap_index];
         array[swap_index] = temp;
+    }
+}
+
+void bubbleSort(int array[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (array[j] > array[j + 1])
+                swap(array, j, j + 1);
+
+                BeginDrawing();
+                    ClearBackground(BLACK);
+                    drawArray(array, SHUFFLE_LEN, 20, 20);
+                EndDrawing(); // i dont know a better way to do this because im dumb as rock so dont question this
+        }
+    }
+}
+
+void swap(int* array, int i, int j) {
+    int temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+}
+
+void drawArray(int array[], int length, int posX, int width) {
+    for (int i = 0; i < length; i++) {
+        DrawRectangle(posX + (i * 30), 25, width, (array[i] * 30) / 3, GREEN);
     }
 }
